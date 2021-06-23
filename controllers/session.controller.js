@@ -39,13 +39,6 @@ const putSessionIdFile = async (req, res, next) => {
   // Check file is empty
   if (!req.files) return res.status(404).json({ error: `Can't read the file` });
 
-  // Check session
-  if (session.confirmed_at) {
-    return res
-      .status(400)
-      .json({ error: `Session #${session.id} was confirmed` });
-  }
-
   const rows = [];
   for (let file of files) {
     const row = {
@@ -68,8 +61,29 @@ const putSessionIdFile = async (req, res, next) => {
   return res.status(200).json({ data: insertedRows });
 };
 
+const confirm = async (req, res, next) => {
+  const session = res.locals.session;
+  const database = req.app.get("database");
+  //Case 3: session is already confirmed
+  if (session.confirmed_at) {
+    return res
+      .status(400)
+      .json({ error: `Session ${session.id} has already confirmed` });
+  }
+
+  const result = await database("sessions")
+    .returning(["id", "confirmed_at"])
+    .where("id", "=", session.id)
+    .update(`confirmed_at`, new Date())
+    .catch((error) => ({ error }));
+
+  if (result.error) return next(result.error);
+  return res.status(200).json(result);
+};
+
 module.exports = {
   validateId,
   post,
-  putSessionIdFile
+  putSessionIdFile,
+  confirm,
 };

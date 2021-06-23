@@ -6,6 +6,7 @@ const configuration = require("../config/configurations");
 
 router.param("session_id", sessionController.validateId);
 router.route("/").post(sessionController.post);
+router.route("/:session_id/confirmation").patch(sessionController.confirm);
 router
   .route("/:session_id/files")
   .put(
