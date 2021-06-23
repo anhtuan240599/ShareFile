@@ -28,3 +28,5 @@ app.use((err, req, res, next) => {
 app.use(cors());
 
 app.use("/api/sessions",sessionRoute)
+
+module.exports = app;

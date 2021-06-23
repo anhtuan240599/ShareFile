@@ -15,6 +15,23 @@ const validateId = async (req, res, next) => {
   return next();
 };
 
+const post = async (req, res, next) => {
+  const database = req.app.get("database");
+
+  const [sessionId] = await database("sessions")
+    .returning("id")
+    .insert({
+      created_at: new Date(),
+    })
+    .catch((error) => []);
+
+  if (!sessionId) {
+    return res.status(500).json({ error: "Could not create new session" });
+  }
+  return res.status(200).json({ id: sessionId });
+};
+
 module.exports = {
-    validateId
-}
+  validateId,
+  post
+};
