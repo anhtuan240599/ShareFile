@@ -1,7 +1,7 @@
 const { nanoid } = require("nanoid");
 const archiver = require("archiver");
 const configurations = require("../config/configurations");
-const fs = require('fs')
+const fs = require("fs");
 const validateId = async (req, res, next, id) => {
   if (!id) {
     return res.status(400).json({ error: "Session Id could not be blank!" });
@@ -112,7 +112,20 @@ const generateZipToken = async (req, res, next) => {
     archive.append(fs.createReadStream(uploadPath), { name: file.name });
   }
   archive.finalize();
-  res.status(200).json(`${token}.zip`)
+  res.status(200).json(`${token}.zip`);
+};
+const downloadByZipToken = async (req, res, next) => {
+  const token = req.params.tarball_token;
+
+  if (!token) {
+    return res.status(400).json({ error: "Token could not be blank!" });
+  }
+  // return file
+  res.download(`${configurations.file.downloadFolder}/${token}`, (err) => {
+    if (err) {
+      return next(err);
+    }
+  });
 };
 
 module.exports = {
@@ -120,5 +133,6 @@ module.exports = {
   post,
   putSessionIdFile,
   confirm,
-  generateZipToken
+  generateZipToken,
+  downloadByZipToken
 };
