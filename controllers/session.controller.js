@@ -1,3 +1,7 @@
+const { nanoid } = require("nanoid");
+const archiver = require("archiver");
+const configurations = require("../config/configurations");
+const fs = require('fs')
 const validateId = async (req, res, next, id) => {
   if (!id) {
     return res.status(400).json({ error: "Session Id could not be blank!" });
@@ -81,9 +85,40 @@ const confirm = async (req, res, next) => {
   return res.status(200).json(result);
 };
 
+const generateZipToken = async (req, res, next) => {
+  const database = req.app.get("database");
+  const session = res.locals.session;
+  const archive = archiver("zip");
+  const files = await database("files")
+    .where("session_id", "=", session.id)
+    .catch(() => []);
+
+  session.files = files;
+  // Generate unique token
+  const token = nanoid();
+
+  const downloadPath = [
+    configurations.file.downloadFolder,
+    `${token}.zip`,
+  ].join("/");
+  const output = fs.createWriteStream(downloadPath);
+
+  archive.on("error", function (err) {
+    throw err;
+  });
+  archive.pipe(output);
+  for (let file of session.files) {
+    const uploadPath = [configurations.file.uploads, file.name].join("/");
+    archive.append(fs.createReadStream(uploadPath), { name: file.name });
+  }
+  archive.finalize();
+  res.status(200).json(`${token}.zip`)
+};
+
 module.exports = {
   validateId,
   post,
   putSessionIdFile,
   confirm,
+  generateZipToken
 };

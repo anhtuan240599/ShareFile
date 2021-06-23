@@ -32,10 +32,5 @@ module.exports = {
   },
   queue: {
     name: process.env.SHAREONE_QUEUE_NAME || "shareone-downloader",
-    redis: {
-      host: process.env.SHAREONE_QUEUE_REDIS_HOST || "127.0.0.1",
-      port: Number(process.env.SHAREONE_QUEUE_REDIS_PORT) || 6379,
-      password: process.env.SHAREONE_QUEUE_REDIS_PASSWORD,
-    },
   },
 };
