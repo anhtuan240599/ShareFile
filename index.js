@@ -26,7 +26,9 @@ app.use((err, req, res, next) => {
 
 // Middlewares
 app.use(cors());
-
+app.get("/", (req,res) => {
+    res.send("Welcome to ShareFile")
+})
 app.use("/api/sessions",sessionRoute)
 
 module.exports = app;
