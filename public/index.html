@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
+      crossorigin="anonymous"
+    ></script>
+    <title>Document</title>
+  </head>
+  <script>
+    const domain = `${window.location.href}`;
+
+    async function createSessions() {
+      const apiSession = domain + "api/sessions";
+      const session = await fetch(apiSession, { method: "POST" }).catch(
+        () => []
+      );
+      const data = await session.json();
+      return data;
+    }
+
+    async function upload() {
+      const session = await createSessions();
+      const sessionId = (document.getElementById("session").innerHTML =
+        session.id);
+
+      endpoint = domain + "api/sessions/" + sessionId + "/files";
+
+      const formData = new FormData();
+
+      const files = document.querySelector('input[type="file"][multiple]');
+      for (let i = 0; i < files.files.length; i++) {
+        formData.append("files", files.files[i]);
+      }
+      await fetch(endpoint, {
+        method: "PUT",
+        body: formData,
+      }).catch((error) => {
+        console.error("Error:", error);
+      });
+    }
+
+    async function confirm() {
+      const sessionId = document.getElementById("session").textContent;
+      const apiComfirmation =
+        domain + "api/sessions/" + sessionId + "/confirmation";
+      const confirmation = await fetch(apiComfirmation, {
+        method: "PATCH",
+      }).catch(() => []);
+      const apiGenerateZipToken = domain + "api/sessions/" + sessionId + "/zip";
+      const generateZipToken = await fetch(apiGenerateZipToken, {
+        method: "GET",
+      }).catch(() => []);
+      const dataGenerateZipToken = await generateZipToken.json();
+      document.getElementById("linkdownload").innerHTML =
+        domain + "api/sessions/" + dataGenerateZipToken;
+    }
+
+    function download() {
+      const url = document.getElementById("linkdownload").textContent;
+      window.open(url);
+    }
+  </script>
+
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-info bg-info">
+      <div class="container">
+        <a class="navbar-brand" href="/" style="color: white">SHARE ONE</a>
+      </div>
+    </nav>
+    <div class="container">
+      <div class="mt-4">
+        <div>
+          <h3>
+            Link download:
+            <div id="linkdownload"></div>
+          </h3>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <input class="form-control" type="file" id="formFile" multiple />
+      </div>
+      <button onclick="upload()">Upload File</button>
+      <button onclick="confirm()">Confirm</button>
+      <button onclick="download()">Download</button>
+      <div style="visibility: hidden">
+        <div id="session"></div>
+      </div>
+    </div>
+  </body>
+</html>
