@@ -42,12 +42,27 @@
       for (let i = 0; i < files.files.length; i++) {
         formData.append("files", files.files[i]);
       }
-      await fetch(endpoint, {
+      const response = await fetch(endpoint, {
         method: "PUT",
         body: formData,
       }).catch((error) => {
         console.error("Error:", error);
       });
+      if (response.status == 200) {
+        const message = "File upload success now you can zip all your files";
+        document.getElementById("message").innerHTML = message;
+        const button = document.getElementById("show_button");
+        button.addEventListener("click", hideshow, false);
+
+        function hideshow() {
+          document.getElementById("hidden-div").style.display = "block";
+          this.style.display = "none";
+        }
+      } else {
+        const message =
+          "!Error : You can upload at least 10 files and file < 250mb , file .exe is rejected";
+        document.getElementById("message").innerHTML = message;
+      }
     }
 
     async function confirm() {
@@ -91,8 +106,11 @@
       <div class="mb-3">
         <input class="form-control" type="file" id="formFile" multiple />
       </div>
-      <button onclick="upload()">Upload File</button>
-      <button onclick="confirm()">Confirm</button>
+      <h4>
+        <div id="message"></div>
+      </h4>
+      <button id="show_button" onclick="upload()">Upload File</button>
+      <button onclick="confirm()">Zip files</button>
       <button onclick="download()">Download</button>
       <div style="visibility: hidden">
         <div id="session"></div>
