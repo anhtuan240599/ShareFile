@@ -7,9 +7,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
     integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
+  <link rel="stylesheet" href="./index.css">
   <title>Document</title>
 </head>
 <script>
+  async function change() {
+    const actualBtn = document.getElementById('formFile');
+
+    const fileChosen = document.getElementById('file-chosen');
+
+    actualBtn.addEventListener('change', function () {
+      if (this.files.length == 1) {
+        fileChosen.textContent = `${this.files.length} file`
+      } else {
+        fileChosen.textContent = `${this.files.length} files`
+      }
+    })
+  }
   const domain = `${window.location.href}`;
   async function move() {
     document.getElementById("myProgress").style.visibility = "visible";
@@ -31,6 +45,11 @@
       }
     }
   }
+
+  async function done() {
+    window.open(domain)
+  }
+
   async function copy() {
     const text = document.getElementById("linkdownload").innerHTML
     navigator.clipboard.writeText(text).then(function () {
@@ -100,6 +119,7 @@
       document.getElementById("message").innerHTML = message;
       document.getElementById("download_button").style.visibility = "visible";
       document.getElementById("copy_button").style.visibility = "visible";
+      document.getElementById("done_button").style.visibility = "visible";
       document.getElementById("confirm_button").style.visibility = "hidden";
       const dataGenerateZipToken = await generateZipToken.json();
       document.getElementById("linkdownload").innerHTML =
@@ -124,7 +144,9 @@
     <h3>A simple way to zip all your files and sharing secure</h3>
 
     <div class="mb-3">
-      <input class="form-control-file border" type="file" id="formFile" multiple />
+      <input onclick="change()" class="form-control-file border" type="file" id="formFile" multiple hidden />
+      <label for="formFile">Choose file</label>
+      <span id="file-chosen">No file chosen</span>
     </div>
     <div id="myProgress" class="progress" style="height: 20px;visibility: hidden;">
       <div id="myBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="25" aria-valuemin="0"
@@ -150,6 +172,10 @@
     </button>
     <button type="button" class="btn btn-danger" id="copy_button" style="visibility: hidden" onclick="copy()">Copy
       Link</button>
+    <button type="button" class="btn btn-danger" id="done_button" style="visibility: hidden"
+      onclick="window.location.reload();">
+      Done
+    </button>
     <div style="visibility: hidden">
       <div id="session"></div>
     </div>
