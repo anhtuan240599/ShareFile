@@ -12,8 +12,12 @@
 <script>
   const domain = `${window.location.href}`;
   async function copy() {
-    document.getElementById("linkdownload").innerHTML;
-    document.execCommand("copy");
+    const text = document.getElementById("linkdownload").innerHTML
+    navigator.clipboard.writeText(text).then(function () {
+      document.getElementById("copy_button").innerHTML = "Copied"
+    }, function (err) {
+      console.error('Async: Could not copy text: ', err);
+    })
   }
   async function createSessions() {
     const apiSession = domain + "api/sessions";
@@ -118,8 +122,8 @@
     <button type="button" class="btn btn-danger" id="download_button" style="visibility: hidden" onclick="download()">
       Download
     </button>
-    <button type="button" class="btn btn-danger" id="copy_button" style="visibility: hidden"
-      onclick="copy()">execCopy</button>
+    <button type="button" class="btn btn-danger" id="copy_button" style="visibility: hidden" onclick="copy()">Copy
+      Link</button>
     <div style="visibility: hidden">
       <div id="session"></div>
     </div>
