@@ -11,6 +11,26 @@
 </head>
 <script>
   const domain = `${window.location.href}`;
+  async function move() {
+    document.getElementById("myProgress").style.visibility = "visible";
+    let i = 0;
+    if (i == 0) {
+      i = 1;
+      let elem = document.getElementById("myBar");
+      let width = 1;
+      let id = setInterval(frame, 5);
+      function frame() {
+        if (width >= 100) {
+          clearInterval(id);
+          i = 0;
+          width = 1;
+        } else {
+          width++;
+          elem.style.width = width + "%";
+        }
+      }
+    }
+  }
   async function copy() {
     const text = document.getElementById("linkdownload").innerHTML
     navigator.clipboard.writeText(text).then(function () {
@@ -54,6 +74,7 @@
       document.getElementById("message").innerHTML = message;
       document.getElementById("toggle").style.visibility = "hidden";
       document.getElementById("confirm_button").style.visibility = "visible";
+      move()
     } else {
       const message =
         "!Error : You can upload the most 10 files and file < 250mb , file .exe is rejected";
@@ -73,6 +94,7 @@
       method: "GET",
     }).catch(() => []);
     if (generateZipToken.status == 200) {
+      move()
       const message =
         "Zip file successful now you can click the below button to download or share the link to your friend";
       document.getElementById("message").innerHTML = message;
@@ -103,6 +125,10 @@
 
     <div class="mb-3">
       <input class="form-control-file border" type="file" id="formFile" multiple />
+    </div>
+    <div id="myProgress" class="progress" style="height: 20px;visibility: hidden;">
+      <div id="myBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="25" aria-valuemin="0"
+        aria-valuemax="100"></div>
     </div>
     <h4>
       <div id="message"></div>
