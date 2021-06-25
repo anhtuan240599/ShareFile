@@ -1,120 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
-      crossorigin="anonymous"
-    />
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
-      integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
-      crossorigin="anonymous"
-    ></script>
-    <title>Document</title>
-  </head>
-  <script>
-    const domain = `${window.location.href}`;
 
-    async function createSessions() {
-      const apiSession = domain + "api/sessions";
-      const session = await fetch(apiSession, { method: "POST" }).catch(
-        () => []
-      );
-      const data = await session.json();
-      return data;
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
+  <title>Document</title>
+</head>
+<script>
+  const domain = `${window.location.href}`;
+  async function copy() {
+    document.getElementById("linkdownload").innerHTML;
+    document.execCommand("copy");
+  }
+  async function createSessions() {
+    const apiSession = domain + "api/sessions";
+    const session = await fetch(apiSession, {
+      method: "POST"
+    }).catch(
+      () => []
+    );
+    const data = await session.json();
+    return data;
+  }
+
+  async function upload() {
+    const session = await createSessions();
+    const sessionId = (document.getElementById("session").innerHTML =
+      session.id);
+
+    endpoint = domain + "api/sessions/" + sessionId + "/files";
+
+    const formData = new FormData();
+
+    const files = document.querySelector('input[type="file"][multiple]');
+    for (let i = 0; i < files.files.length; i++) {
+      formData.append("files", files.files[i]);
     }
-
-    async function upload() {
-      const session = await createSessions();
-      const sessionId = (document.getElementById("session").innerHTML =
-        session.id);
-
-      endpoint = domain + "api/sessions/" + sessionId + "/files";
-
-      const formData = new FormData();
-
-      const files = document.querySelector('input[type="file"][multiple]');
-      for (let i = 0; i < files.files.length; i++) {
-        formData.append("files", files.files[i]);
-      }
-      const response = await fetch(endpoint, {
-        method: "PUT",
-        body: formData,
-      }).catch((error) => {
-        console.error("Error:", error);
-      });
-      if (response.status == 200) {
-        const message = "File upload success now you can zip all your files";
-        document.getElementById("message").innerHTML = message;
-        const button = document.getElementById("show_button");
-        button.addEventListener("click", hideshow, false);
-
-        function hideshow() {
-          document.getElementById("hidden-div").style.display = "block";
-          this.style.display = "none";
-        }
-      } else {
-        const message =
-          "!Error : You can upload at least 10 files and file < 250mb , file .exe is rejected";
-        document.getElementById("message").innerHTML = message;
-      }
+    const response = await fetch(endpoint, {
+      method: "PUT",
+      body: formData,
+    }).catch((error) => {
+      console.error("Error:", error);
+    });
+    if (response.status == 200) {
+      const message = "File upload success now you can zip all your files";
+      document.getElementById("message").innerHTML = message;
+      document.getElementById("toggle").style.visibility = "hidden";
+      document.getElementById("confirm_button").style.visibility = "visible";
+    } else {
+      const message =
+        "!Error : You can upload the most 10 files and file < 250mb , file .exe is rejected";
+      document.getElementById("message").innerHTML = message;
     }
+  }
 
-    async function confirm() {
-      const sessionId = document.getElementById("session").textContent;
-      const apiComfirmation =
-        domain + "api/sessions/" + sessionId + "/confirmation";
-      const confirmation = await fetch(apiComfirmation, {
-        method: "PATCH",
-      }).catch(() => []);
-      const apiGenerateZipToken = domain + "api/sessions/" + sessionId + "/zip";
-      const generateZipToken = await fetch(apiGenerateZipToken, {
-        method: "GET",
-      }).catch(() => []);
+  async function confirm() {
+    const sessionId = document.getElementById("session").textContent;
+    const apiComfirmation =
+      domain + "api/sessions/" + sessionId + "/confirmation";
+    const confirmation = await fetch(apiComfirmation, {
+      method: "PATCH",
+    }).catch(() => []);
+    const apiGenerateZipToken = domain + "api/sessions/" + sessionId + "/zip";
+    const generateZipToken = await fetch(apiGenerateZipToken, {
+      method: "GET",
+    }).catch(() => []);
+    if (generateZipToken.status == 200) {
+      const message =
+        "Zip file successful now you can click the below button to download or share the link to your friend";
+      document.getElementById("message").innerHTML = message;
+      document.getElementById("download_button").style.visibility = "visible";
+      document.getElementById("copy_button").style.visibility = "visible";
+      document.getElementById("confirm_button").style.visibility = "hidden";
       const dataGenerateZipToken = await generateZipToken.json();
       document.getElementById("linkdownload").innerHTML =
         domain + "api/sessions/" + dataGenerateZipToken;
     }
+  }
 
-    function download() {
-      const url = document.getElementById("linkdownload").textContent;
-      window.open(url);
-    }
-  </script>
+  function download() {
+    const url = document.getElementById("linkdownload").textContent;
+    window.open(url);
+  }
+</script>
 
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-info bg-info">
-      <div class="container">
-        <a class="navbar-brand" href="/" style="color: white">SHARE ONE</a>
-      </div>
-    </nav>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-info bg-info">
     <div class="container">
-      <div class="mt-4">
-        <div>
-          <h3>
-            Link download:
-            <div id="linkdownload"></div>
-          </h3>
-        </div>
-      </div>
-
-      <div class="mb-3">
-        <input class="form-control" type="file" id="formFile" multiple />
-      </div>
-      <h4>
-        <div id="message"></div>
-      </h4>
-      <button id="show_button" onclick="upload()">Upload File</button>
-      <button onclick="confirm()">Zip files</button>
-      <button onclick="download()">Download</button>
-      <div style="visibility: hidden">
-        <div id="session"></div>
-      </div>
+      <a class="navbar-brand" href="/" style="color: white">SHARE ONE</a>
     </div>
-  </body>
+  </nav>
+  <div class="container" style="margin-top: 300px;">
+
+    <h3>A simple way to zip all your files and sharing secure</h3>
+
+    <div class="mb-3">
+      <input class="form-control-file border" type="file" id="formFile" multiple />
+    </div>
+    <h4>
+      <div id="message"></div>
+      <br></br>
+      <div>
+        <h3>
+          <div id="linkdownload"></div>
+        </h3>
+      </div>
+    </h4>
+    <button type="button" class="btn btn-success" id="toggle" onclick="upload()">
+      Upload File
+    </button>
+    <button type="button" id="confirm_button" class="btn btn-primary" style="visibility: hidden" onclick="confirm()">
+      Zip files
+    </button>
+    <button type="button" class="btn btn-danger" id="download_button" style="visibility: hidden" onclick="download()">
+      Download
+    </button>
+    <button type="button" class="btn btn-danger" id="copy_button" style="visibility: hidden"
+      onclick="copy()">execCopy</button>
+    <div style="visibility: hidden">
+      <div id="session"></div>
+    </div>
+  </div>
+</body>
+
 </html>
