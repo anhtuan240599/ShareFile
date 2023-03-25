@@ -5,13 +5,12 @@ module.exports = {
     connection: {
       host:
         process.env.SHAREONE_DATABASE_HOST ||
-        "ec2-54-225-228-142.compute-1.amazonaws.com",
+        "ep-spring-base-864849.ap-southeast-1.aws.neon.tech",
       port: Number(process.env.SHAREONE_DATABASE_PORT) || 5432,
-      user: process.env.SHAREONE_DATABASE_USER || "syfbypioxxrqkz",
+      user: process.env.SHAREONE_DATABASE_USER || "anhtuan240599",
       password:
-        process.env.SHAREONE_DATABASE_PASSWORD ||
-        "1b4283d6214de66fbb0f7931a63c4f8841ad39f60565790d1f10fe7f5e1a6774",
-      database: process.env.SHAREONE_DATABASE_DATABASE || "d3u87lhmqb657t",
+        process.env.SHAREONE_DATABASE_PASSWORD || "xcDs9wo4hiXT",
+      database: process.env.SHAREONE_DATABASE_DATABASE || "neondb",
       ssl: {
         rejectUnauthorized: false,
       },
