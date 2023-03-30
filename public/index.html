@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <link rel="icon" href="./favicon.ico" type="image/png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
@@ -72,6 +73,7 @@
   }
 
   async function upload() {
+    document.getElementById("loading").style.visibility = "visible";
     const session = await createSessions();
     const sessionId = (document.getElementById("session").innerHTML =
       session.id);
@@ -95,6 +97,7 @@
       document.getElementById("message").innerHTML = message;
       document.getElementById("choose_file").style.visibility = "hidden";
       document.getElementById("toggle").style.visibility = "hidden";
+      document.getElementById("loading").style.visibility = "hidden";
       document.getElementById("confirm_button").style.visibility = "visible";
       move()
     } else {
@@ -145,11 +148,11 @@
   <div class="container" style="margin-top: 190px; margin-bottom: 100px;">
 
     <h3>A simple way to zip all your files and sharing secure</h3>
-
     <div class="mb-3" id="choose_file">
       <input onclick="change()" class="form-control-file border" type="file" id="formFile" multiple hidden />
       <label for="formFile" style="background-color: #007bff">Choose file</label>
       <span id="file-chosen">No file chosen</span>
+      <h3 id="loading" style="visibility: hidden">Loading....</h3>
     </div>
     <div id="myProgress" class="progress" style="height: 20px;visibility: hidden;">
       <div id="myBar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="25" aria-valuemin="0"
@@ -195,7 +198,7 @@
     <!-- Left -->
 
     <!-- Right -->
-    
+
     <!-- Right -->
   </section>
   <!-- Section: Social media -->
